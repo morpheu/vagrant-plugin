@@ -40,17 +40,9 @@ module Vagrant
       @vagrantfile = attrs['vagrantfile']
     end
 
-    def path_to_vagrantfile(build)
-      if @vagrantfile.nil?
-        return build.workspace.to_s
-      end
-
-      return File.expand_path(File.join(build.workspace.to_s, @vagrantfile))
-    end
-
     # Called some time before the build is to start.
     def setup(build, launcher, listener)
-      path = path_to_vagrantfile(build)
+      path = @vagrantfile.nil? ? build.workspace.to_s : @vagrantfile
 
       unless File.exists? File.join(path, 'Vagrantfile')
         listener.info("There is no Vagrantfile in your workspace!")
