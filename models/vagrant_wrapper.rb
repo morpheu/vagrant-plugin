@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'vagrant'
+require 'vagrant-vbguest'
 
 module Vagrant
   # This will handle proxying output from Vagrant into Jenkins
