@@ -2,7 +2,7 @@ source :gemcutter
 
 gem "jenkins-plugin-runtime"
 gem "jenkins-plugin"
-gem 'vagrant', '~> 1.0.5'
+gem 'vagrant'
 gem 'jruby-openssl'
 gem 'rvm'
 gem 'vagrant-vbguest'

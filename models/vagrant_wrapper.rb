@@ -36,9 +36,14 @@ module Vagrant
     display_name "Boot Vagrant box"
 
     attr_accessor :vagrantfile
+    attr_accessor :vagrant_destroy_vms
+    attr_accessor :vagrant_reload_vms
+
     def initialize(attrs)
       @vagrant = nil
       @vagrantfile = attrs['vagrantfile']
+      @vagrant_destroy_vms = attrs['vagrant_destroy_vms']
+      @vagrant_reload_vms = attrs['vagrant_reload_vms']
     end
 
     # Called some time before the build is to start.
@@ -57,7 +62,21 @@ module Vagrant
       @vagrant.ui.listener = listener
 
       listener.info "Vagrantfile loaded, bringing Vagrant box up for the build"
-      @vagrant.cli('up', '--no-provision')
+
+      if @vagrant_reload_vms
+        @vagrant.vms.each do |name,vm|
+          unless vm.created?
+            listener.info("Creating '#{name}' VM ..."
+            vm.up
+            next
+          end
+          listener.info("Reloading '#{name}' VM ...")
+          vm.reload("provision.enabled".to_sym => false)
+        end
+      else
+        @vagrant.cli('up', '--no-provision')
+      end
+
       listener.info "Vagrant box is online, continuing with the build"
 
       build.env[:vagrant] = @vagrant
@@ -65,6 +84,8 @@ module Vagrant
       # i.e. if we have actually done anything with the box, we will mark it
       # dirty and can then take further action based on that
       build.env[:vagrant_dirty] = false
+
+      build.env[:vagrant_destroy_vms] = @vagrant_destroy_vms
     end
 
     # Called some time when the build is finished.
@@ -73,7 +94,7 @@ module Vagrant
         return
       end
 
-      unless build.env[:vagrant_disable_destroy]
+      if build.env[:vagrant_destroy_vms]
         listener.info "Build finished, destroying the Vagrant box"
         @vagrant.cli('destroy', '-f')
       end

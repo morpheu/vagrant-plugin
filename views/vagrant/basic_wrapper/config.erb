@@ -6,5 +6,13 @@ f.block do
             :description => 'Alternate path, relative to workspace root, to Vagrantfile (<em>only needed if the Vagrantfile is not in the root directory</em>)') do
         f.textbox
     end
+    f.entry(:title => 'Remove vagrant boxes after build - on failure or not',
+            :field => 'vagrant_destroy_vms') do
+        f.booleanRadio
+    end
+    f.entry(:title => 'Reload VMs on build',
+            :field => 'vagrant_reload_vms') do
+        f.booleanRadio
+    end
 end
 %>
