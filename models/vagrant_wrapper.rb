@@ -63,7 +63,7 @@ module Vagrant
 
       listener.info "Vagrantfile loaded, bringing Vagrant box up for the build"
 
-      if @vagrant_reload_vms
+      if @vagrant_reload_vms.eql?("true")
         @vagrant.vms.each do |name,vm|
           unless vm.created?
             listener.info("Creating '#{name}' VM ..."
@@ -94,7 +94,7 @@ module Vagrant
         return
       end
 
-      if build.env[:vagrant_destroy_vms]
+      if build.env[:vagrant_destroy_vms].eql?("true")
         listener.info "Build finished, destroying the Vagrant box"
         @vagrant.cli('destroy', '-f')
       end
